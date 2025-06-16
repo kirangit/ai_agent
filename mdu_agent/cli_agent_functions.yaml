@@ -1,0 +1,269 @@
+- type: function
+  function:
+    name: get_networks
+    description: Retrieves the list of existing cnMaestro networks. GPT should extract the 'name' field from each network in the 'data' array and ask the user if they want to use one of these existing networks or create a new one.
+    parameters:
+      type: object
+      properties: {}
+      required: []
+    response_format:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique network ID
+              name:
+                type: string
+                description: Name of the network
+              managed_account:
+                type: string
+                description: Managed account identifier
+
+- type: function
+  function:
+    name: create_network
+    description: |
+      Creates a new cnMaestro network with the specified name.
+
+      Notes:
+      - The name must be unique. If a network with the same name already exists, the request will fail.
+      - If the authentication token is invalid or expired, the operation will fail with an authorization error.
+
+    parameters:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the network to create. Must be unique.
+      required: [name]
+
+- type: function
+  function:
+    name: get_sites
+    description: |
+      Retrieves the list of sites under a specified cnMaestro network.
+
+      Notes:
+      - This function requires the network ID of the selected network.
+      - Use this to let the user choose from existing sites.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the cnMaestro network whose sites should be listed.
+      required: [network_id]
+
+- type: function
+  function:
+    name: create_site
+    description: |
+      Creates a new site under the specified cnMaestro network.
+
+      Notes:
+      - You must provide the network ID where the site will be created.
+      - Latitude and longitude are required for geolocation purposes.
+      - Site names must be unique within the same network.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the network where the site will be created.
+        name:
+          type: string
+          description: Name of the site to be created. Must be unique within the network.
+        latitude:
+          type: number
+          description: Latitude of the site location.
+        longitude:
+          type: number
+          description: Longitude of the site location.
+      required: [network_id, name, latitude, longitude]
+
+
+- type: function
+  function:
+    name: create_nse_group
+    description: >
+      Creates an NSE group in cnMaestro. This function builds the full configuration from inputs and immediately calls the API to create the group.
+    parameters:
+      type: object
+      properties:
+        nse_group:
+          type: string
+        resident_unit_count:
+          type: integer
+        resident_vlan_mode:
+          type: string
+          enum: [shared, per_unit]
+        community_vlan_id:
+          type: integer
+        community_dhcp_subnet:
+          type: string
+        resident_start_vlan_id:
+          type: integer
+        resident_start_subnet:
+          type: string
+        default_dhcp_subnet:
+          type: string
+      required:
+        - nse_group
+        - resident_unit_count
+        - resident_vlan_mode
+        - community_vlan_id
+        - community_dhcp_subnet
+        - resident_start_vlan_id
+        - resident_start_subnet
+        - default_dhcp_subnet
+
+- type: function
+  function:
+    name: get_nse_groups
+    description: |
+      Retrieves all existing NSE groups in cnMaestro.
+
+      Notes:
+      - This function is primarily used to check if a group with the same name already exists before creating a new one.
+      - GPT should use only the 'name' field from each group in the response.
+      - Ignore other fields unless the user explicitly asks to inspect them.
+
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+- type: function
+  function:
+    name: claim_nse_device
+    description: |
+      Claims and onboards an NSE device using its MSN (serial number).
+
+      Notes:
+      - GPT must ask the user to provide the 12-character MSN (serial number).
+      - The NSE group name should be reused from the earlier configuration context.
+      - Do not ask the user for `type` or `approved` — these are always set to `'nse'` and `true`, respectively.
+      - Use this function only if the device has not already been claimed.
+
+    parameters:
+      type: object
+      properties:
+        msn:
+          type: string
+          description: 12-character serial number of the device to be claimed.
+        nse_group:
+          type: string
+          description: Name of the NSE group to assign the device to. Reuse the value remembered from earlier.
+      required: [msn, nse_group]
+
+
+- type: function
+  function:
+    name: create_resident_wlan_profile
+    description: |
+      Creates a WLAN profile for residential use in cnMaestro.
+
+      Notes:
+      - GPT should ask the user only for the profile name.
+      - The rest of the configuration (e.g., SSID, security, passphrase) is predefined and managed internally.
+      - The profile name must contain only letters, digits, underscores, or hyphens — no spaces or special characters.
+
+      The profile will use:
+      - description: "resident-mdu"
+      - ssid: "cnPilot"
+      - security: "wpa2-psk"
+      - passphrase: "12345678"
+      - epsk_settings.mode: "local"
+      - epsk_settings.enable_base_personal_ssid: true
+
+    parameters:
+      type: object
+      properties:
+        profile_name:
+          type: string
+          description: |
+            Name of the resident WLAN profile. Must contain only letters, digits, underscores, or hyphens. No spaces.
+      required: [profile_name]
+
+
+- type: function
+  function:
+    name: create_community_wlan_profile
+    description: |
+      Creates a WLAN profile for community/shared use in cnMaestro.
+
+      Notes:
+      - GPT should ask the user only for the profile name.
+      - The rest of the configuration (e.g., SSID, security, passphrase) is predefined and managed internally.
+      - The profile name must contain only letters, digits, underscores, or hyphens — no spaces or special characters.
+
+      The profile will use:
+      - description: "community-mdu"
+      - ssid: "cnPilot"
+      - security: "wpa2-psk"
+      - passphrase: "12345678"
+      - epsk_settings.mode: "local"
+      - epsk_settings.enable_base_personal_ssid: false
+
+    parameters:
+      type: object
+      properties:
+        profile_name:
+          type: string
+          description: |
+            Name of the community WLAN profile. Must contain only letters, digits, underscores, or hyphens. No spaces.
+      required: [profile_name]
+
+
+- type: function
+  function:
+    name: create_ap_group
+    description: |
+      Creates an AP group in cnMaestro using previously configured WLAN profiles and VLAN assignments.
+
+      Notes:
+      - GPT should ask the user only for the AP group name.
+      - All other parameters should be remembered or reused from earlier steps.
+      - The AP group will include the resident and community WLAN profiles, the VLAN range based on resident mode, and the community VLAN.
+      - GPT should not construct the JSON body — just pass the collected parameters. The backend will build and post the configuration.
+
+    parameters:
+      type: object
+      properties:
+        ap_group_name:
+          type: string
+          description: Name of the AP group. Must not contain spaces or special characters.
+        community_wlan_profile:
+          type: string
+          description: Name of the previously created community WLAN profile.
+        residential_wlan_profile:
+          type: string
+          description: Name of the previously created residential WLAN profile.
+        resident_vlan_mode:
+          type: string
+          enum: [single, per_unit]
+          description: VLAN mode used for resident traffic.
+        resident_start_vlan_id:
+          type: integer
+          description: Starting VLAN ID used for resident units.
+        resident_unit_count:
+          type: integer
+          description: Number of residential units to be served by this AP group.
+        community_vlan_id:
+          type: integer
+          description: VLAN ID used for the community WLAN.
+      required:
+        - ap_group_name
+        - community_wlan_profile
+        - residential_wlan_profile
+        - resident_vlan_mode
+        - resident_start_vlan_id
+        - resident_unit_count
+        - community_vlan_id

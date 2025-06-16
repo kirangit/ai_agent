@@ -1,0 +1,256 @@
+{
+      "name": "TEST_GROUP",
+      "auto_sync": true,
+      "shared": false,
+      "management": {
+        "tz_name": "Asia/New Delhi",
+        "ntp_server": [
+          {
+            "server_address": "time.google.com"
+          },
+          {
+            "server_address": ""
+          }
+        ]
+      },
+      "network": {
+        "interface_eth3_lldp_pba": true,
+        "interface_eth3_lldp_pba_msg_auth": true,
+        "interface_eth3_mode": "trunk",
+        "interface_eth3_native_vlan": 1,
+        "interface_eth3_phy_advertise": "auto",
+        "interface_eth3_phy_duplex": "full",
+        "interface_eth3_phy_speed": "auto",
+        "interface_eth3_shutdown": false,
+        "interface_eth3_tag_native": "disable",
+        "interface_eth4_lldp_pba": true,
+        "interface_eth4_lldp_pba_msg_auth": true,
+        "interface_eth4_mode": "trunk",
+        "interface_eth4_native_vlan": 1,
+        "interface_eth4_phy_advertise": "auto",
+        "interface_eth4_phy_duplex": "full",
+        "interface_eth4_phy_speed": "auto",
+        "interface_eth4_shutdown": false,
+        "interface_eth4_tag_native": "disable",
+        "interface_eth5_lldp_pba": true,
+        "interface_eth5_lldp_pba_msg_auth": true,
+        "interface_eth5_mode": "trunk",
+        "interface_eth5_native_vlan": 1,
+        "interface_eth5_phy_advertise": "auto",
+        "interface_eth5_phy_duplex": "full",
+        "interface_eth5_phy_speed": "auto",
+        "interface_eth5_shutdown": false,
+        "interface_eth5_tag_native": "disable",
+        "interface_eth6_lldp_pba": true,
+        "interface_eth6_lldp_pba_msg_auth": true,
+        "interface_eth6_mode": "trunk",
+        "interface_eth6_native_vlan": 1,
+        "interface_eth6_phy_advertise": "auto",
+        "interface_eth6_phy_duplex": "full",
+        "interface_eth6_phy_speed": "auto",
+        "interface_eth6_shutdown": false,
+        "interface_eth6_tag_native": "disable",
+        "lan_interfaces": [
+          {
+	         "name": "VLAN-1",
+            "dhcp": "dhcp_pool",
+            "ip_addr": "192.168.200.1",
+            "ip_mode": "static",
+            "vlan_id": 1,
+            "dhcp_relay": {
+              "enable": false
+            },
+            "subnet_mask": "255.255.255.0",
+            "dhcp_pool_config": {
+              "dhcp_pool_enable": true,
+              "dhcp_pool_domain_name": "cambium",
+              "dhcp_pool_end_address": "192.168.200.150",
+              "dhcp_pool_start_address": "192.168.200.50",
+              "dhcp_pool_primary_dns_server": "192.168.200.1"
+            },
+            "rate_limit_rules": {
+              "rate_limit": "disable"
+            },
+            "management_access": "enable"
+          }
+        ]
+      },
+      "groups": {
+        "application_groups": null,
+        "ip_groups": null,
+        "user_groups": null
+      },
+      "firewall": {
+        "stateful_firewall": true
+      },
+      "dns": {
+        "dns_server": "enable",
+        "dns_filters": {
+          "policies": [],
+          "configuration": {
+            "filter_mode": "disabled",
+            "moderate_hosts": [
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "www.google.com"
+              },
+              {
+                "ip_addr": "204.79.197.200",
+                "domain_name": "www.bing.com"
+              },
+              {
+                "ip_addr": "216.239.38.119",
+                "domain_name": "www.youtube.com"
+              },
+              {
+                "ip_addr": "216.239.38.119",
+                "domain_name": "m.youtube.com"
+              },
+              {
+                "ip_addr": "216.239.38.119",
+                "domain_name": "youtubei.googleapis.com"
+              },
+              {
+                "ip_addr": "216.239.38.119",
+                "domain_name": "youtube.googleapis.com"
+              },
+              {
+                "ip_addr": "216.239.38.119",
+                "domain_name": "www.youtube-nocookie.com"
+              },
+              {
+                "ip_addr": "40.81.93.196",
+                "domain_name": "duckduckgo.com"
+              },
+              {
+                "ip_addr": "213.180.193.56",
+                "domain_name": "yandex.ru"
+              }
+            ],
+            "restricted_hosts": [
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "www.google.com"
+              },
+              {
+                "ip_addr": "204.79.197.220",
+                "domain_name": "www.bing.com"
+              },
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "www.youtube.com"
+              },
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "m.youtube.com"
+              },
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "youtubei.googleapis.com"
+              },
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "youtube.googleapis.com"
+              },
+              {
+                "ip_addr": "216.239.38.120",
+                "domain_name": "www.youtube-nocookie.com"
+              },
+              {
+                "ip_addr": "40.81.93.196",
+                "domain_name": "duckduckgo.com"
+              },
+              {
+                "ip_addr": "213.180.193.56",
+                "domain_name": "yandex.ru"
+              }
+            ],
+            "event_for_deny_policy": "disabled"
+          }
+        },
+        "name_server": [
+          {
+            "server_ip": ""
+          },
+          {
+            "server_ip": ""
+          }
+        ],
+        "dns_override": true,
+        "logging_syslog_dnsmasq": false,
+        "learn_dns_servers_from_dhcp": true
+      },
+      "threat_protection": {
+        "ips": false,
+        "ips_mode": "detection",
+        "ips_rule_set": "balanced",
+        "ips_rule_type": "snort-community",
+        "ips_auto_update": false
+      },
+      "vpn": {
+        "wg_vpn_server_mode": false,
+        "radius_server_users": [],
+        "site_to_site": false,
+        "ike_eap_vpn": false,
+        "l2tp_client_vpn": false,
+        "vpn_server_interface": "all",
+        "vpn_server_mfa": "false"
+      },
+      "wan": {
+        "wan_interfaces": [
+          {
+            "bandwidth_config": {
+              "uplink_bandwidth": "1000",
+              "downlink_bandwidth": "1000"
+            },
+            "default_gateway": "",
+            "dyndns_config": {
+              "provider": "noip",
+              "username": "",
+              "dnshostname": "",
+              "dyndns_mode": "disable"
+            },
+            "failover_policy_state": false,
+            "ip_addr": "",
+            "ip_mode": "dynamic",
+            "subnet_mask": "",
+            "name": "wan1",
+            "name_server": [
+              "",
+              ""
+            ],
+            "source_nat": "enable",
+            "speedtest": false,
+            "traffic_shaping": "disable",
+            "vlan": ""
+          },
+          {
+            "bandwidth_config": {
+              "uplink_bandwidth": "1000",
+              "downlink_bandwidth": "1000"
+            },
+            "default_gateway": "",
+            "dyndns_config": {
+              "provider": "noip",
+              "username": "",
+              "dnshostname": "",
+              "dyndns_mode": "disable"
+            },
+            "failover_policy_state": false,
+            "ip_addr": "",
+            "ip_mode": "dynamic",
+            "subnet_mask": "",
+            "name": "wan2",
+            "name_server": [
+              "",
+              ""
+            ],
+            "source_nat": "enable",
+            "speedtest": false,
+            "traffic_shaping": "disable",
+            "vlan": ""
+          }
+        ]
+      },
+      "user_defined_overrides": null
+}

@@ -1,4 +1,4 @@
-# cnWave Network Analyst AI Agent
+# cnWave AI Agent
 
 This AI Agent helps engineers analyze, troubleshoot, and visualize data from Cambium Networks' cnWave 60 GHz platform using API integrations and natural language interactions.
 

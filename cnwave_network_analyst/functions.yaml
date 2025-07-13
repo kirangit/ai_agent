@@ -1,0 +1,440 @@
+- type: function
+  function:
+    name: get_networks
+    description: |
+      Retrieves all cnMaestro networks visible to the user.
+
+      Notes:
+      - Only networks of type `e2e` are relevant for cnWave operations.
+      - These networks are used in subsequent API calls for topology, devices, sites, and links.
+
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+- type: function
+  function:
+    name: get_network_counts
+    description: |
+      Return a high-level snapshot of the network:
+        • nodes: total, online, offline, DN, CN, platform (V5k/V3k/V2k/V1k)
+        • links: total, online, offline
+        Use this when the user wants a quick “network summary / health check.”
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the cnWave network
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_devices
+    description: |
+      Retrieves a list of devices across cnMaestro networks.
+
+      Notes:
+      - You can filter devices by network, online status, site, or device type.
+      - Use this to fetch all or a filtered subset of cnWave devices.
+
+    parameters:
+      type: object
+      properties:
+        network:
+          type: string
+          description: Optional. Filter by network ID.
+        type:
+          type: string
+          description: Optional. Filter by device type (e.g., cnwave60).
+        online:
+          type: boolean
+          description: Optional. Set to true or false to get online/offline devices.
+        sort:
+          type: string
+          enum: [mac, name, registration_date]
+          description: Optional. Sorting parameter.
+        site:
+          type: string
+          description: Optional. Filter by specific site name.
+        fields:
+          type: string
+          description: Optional. Comma-separated list of attributes to include in the response.
+        limit:
+          type: integer
+          description: Optional. Max number of items to return.
+        offset:
+          type: integer
+          description: Optional. Number of items to skip from start.
+ 
+      required: []
+
+- type: function
+  function:
+    name: get_sites
+    description: |
+      Retrieves the list of sites under a specified cnMaestro network.
+
+      Notes:
+      - Required for resolving the layout of nodes within a network.
+      - Used in building topology and diagnostics.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the network whose sites should be retrieved.
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_site
+    description: |
+      Retrieves details for a single site under a given network.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: Network ID where the site is located.
+        site_id:
+          type: string
+          description: Name of the site whose information is to be retrieved.
+      required: [network_id, site_id]
+
+- type: function
+  function:
+    name: get_links
+    description: |
+      Retrieves all links in a given cnWave network.
+
+      Notes:
+      - Each link has a "from" (a_node) and "to" (z_node) end.
+      - Backup client links can be identified using `is_backup_cn_link=true`.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the network for which to retrieve link data.
+        fields:
+          type: string
+          description: Optional. Comma-separated list of attributes to include in the response. 
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_network_links_statistics
+    description: |
+      Returns **direction-level** real-time statistics for **all wireless links** in a
+      given cnWave network.
+      Use this for comparing or analyzing link performance at scale.
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: Network ID whose link statistics are needed.
+        fields:
+          type: string
+          description: >
+            Optional. Comma-separated list of attributes to include in the response.
+            Use this to limit which link statistics fields are returned.
+            For supported fields, refer to the "Link Statistics Tools Guidance" section
+            in the system prompt.
+
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_link_statistics_for_device
+    description: |
+      Retrieves link statistics for all links associated with a specific device. Use this only for focused analysis on one node.
+
+    parameters:
+      type: object
+      properties:
+        mac:
+          type: string
+          description: MAC address of the device (use colon-separated format).
+        fields:
+          type: string
+          description: >
+            Optional. Comma-separated list of attributes to include in the response.
+            Use this to limit which link statistics fields are returned.
+            For supported fields, refer to the "Link Statistics Tools Guidance" section
+            in the system prompt.
+      required: [mac]
+
+- type: function
+  function:
+    name: get_single_link_statistics_for_device
+    description: |
+      Returns link statistics for a specific link of a device in a cnWave network. Intended for targeted link diagnostics only
+
+    Notes:
+    - Both the `mac` (device identifier) and `link_name` (the exact name of the link) are required.
+    - If the link_name is missing, this function will not return any statistics.
+
+    parameters:
+      type: object
+      properties:
+        mac:
+          type: string
+          description: MAC address of the device.
+        link_name:
+          type: string
+          description: Name of the link to fetch statistics for.
+        fields:
+          type: string
+          description: >
+            Optional. Comma-separated list of attributes to include in the response.
+            Use this to limit which link statistics fields are returned.
+            For supported fields, refer to the "Link Statistics Tools Guidance" section
+            in the system prompt.
+      required: [mac, link_name]
+
+- type: function
+  function:
+    name: get_device_link_performance
+    description: |
+      Retrieves historical performance snapshots for a specific link of a cnWave device.
+
+      Notes:
+      - The results are sampled approximately every 5 minutes.
+      - Timestamps should be in UTC format.
+
+    parameters:
+      type: object
+      properties:
+        mac:
+          type: string
+          description: MAC address of the device.
+        link_name:
+          type: string
+          description: Name of the link.
+        start_time:
+          type: string
+          description: UTC timestamp indicating the start of the interval.
+        stop_time:
+          type: string
+          description: UTC timestamp indicating the end of the interval.
+      required: [mac, link_name, start_time, stop_time]
+
+- type: function
+  function:
+    name: get_weather
+    description: |
+      Retrieves historical hourly precipitation data (in mm) for a given location and time window.
+      
+      This is useful for diagnosing cnWave 60 GHz link degradation potentially caused by rain fade. You can correlate link issues with local rainfall intensity.
+
+      Weather data is sourced from the Open-Meteo archive API.
+
+    parameters:
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the location in decimal degrees (e.g., 12.97).
+        longitude:
+          type: number
+          description: Longitude of the location in decimal degrees (e.g., 77.59).
+        start_date:
+          type: string
+          format: date
+          description: Start date (UTC) in YYYY-MM-DD format (e.g., 2025-07-01).
+        end_date:
+          type: string
+          format: date
+          description: End date (UTC) in YYYY-MM-DD format (e.g., 2025-07-05).
+      required: [latitude, longitude, start_date, end_date]
+
+- type: function
+  function:
+    name: get_device_overrides
+    description: |
+      Fetches configuration overrides for devices in a cnWave network.
+
+      This includes overridden settings for:
+      - Radio parameters (e.g., `txPower`, `maxTxPower`, `channel`)
+      - VLAN configuration (e.g., `nativeVID`, `vlanPortType` per NIC)
+      - POP and tunnel parameters (e.g., `POP_ADDR`, 'POP_IFACE'). POP_ADDR and POP_IFACE are set for POP devices only
+      - Environmental and system parameters (e.g., DHCP, IP, managed config)
+
+      Use this function to inspect if custom settings have been applied at the device.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: The cnWave network ID to inspect overrides in.
+        name:
+          type: string
+          description: Optional. Comma-separated list of device names to filter for specific devices.
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_controller_info
+    description: |
+      Retrieves controller configuration and status for a specific cnWave network.
+
+      Includes:
+      - Controller version and IP addresses
+      - Deployment type (onboard/external)
+      - Layer 2 bridge status
+      - Prefix allocation. Deterministic (DPA) / Centralized (CPA)
+      - sync status
+      - System clock sync
+      - software version
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the cnWave network to query controller info for.
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_current_utc_time
+    description: Returns the current UTC time in ISO 8601 format (e.g., 2025-07-06T13:45:00Z). Use this to timestamp weather queries or time-sensitive diagnostics.
+    parameters:
+      type: object
+      properties: {}
+      required: []
+
+- type: function
+  function:
+    name: create_visual_map
+    description: |
+      Generates an interactive visual map for a given cnWave network using sector azimuths, link lines, and node placements.
+
+      The map is:
+      - Based on data from tools.cnmaestro API (sites, nodes, links)
+      - Rendered as an HTML file with Folium
+      - Returned as a file path and local viewable link
+
+      Useful for topology visualization, demo, and validation purposes.
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID or name of the cnWave network to visualize.
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_network_device_statistics
+    description: |
+      Retrieves real-time statistics for all cnWave devices in a given network.
+
+      Notes:
+      - Includes:
+        • `radios`: Sector-level statistics; each entry corresponds to one wireless sector.
+          - Devices like V5000 have two radios (dual-sector), others have one.
+          - Each radio includes `rx_bps`, `tx_bps`, `sync_mode`, `channel`, etc.
+        • `ethports`: Ethernet port stats for `nic1`, `nic2` including throughput and errors.
+        • `cpu`, `memory`: Node-level resource usage.
+        • `rx_pkts_drop`, `tx_errors`: Useful for detecting congestion or port issues.
+      - network — one call gets the whole table (use this for “all nodes” queries
+
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the cnWave network whose device stats are needed.
+        fields:
+          type: string
+          description: >
+            Optional. Comma-separated list of statistics to include in the response.
+        limit:
+          type: integer
+          description: Optional. Max number of items to return.
+        offset:
+          type: integer
+          description: Optional. Number of items to skip from start.
+
+      required: [network_id]
+
+- type: function
+  function:
+    name: get_device_statistics_by_mac
+    description: |
+      Returns real-time statistics for a single cnWave device, including radio and Ethernet stats.
+
+      Notes:
+      - `radios` array represents per-sector data:
+        • Most devices have 1 radio; V5000 has 2 radios (sectors).
+        • Each radio includes `tx_bps`, `rx_bps`, `sync_mode`, and `channel`.
+      - `ethports` array shows per-interface stats such as:
+        • `rx_pkts`, `tx_pkts`, `errors`, and `drops` per NIC.
+      - `cpu` and `memory` report overall system load.
+      - Use this for deep inspection or troubleshooting of a specific node.
+      - Stats for **one** device. Do NOT loop this for network-wide reports.
+
+    parameters:
+      type: object
+      properties:
+        mac:
+          type: string
+          description: MAC address of the device (use colon-separated format).
+        fields:
+          type: string
+          description: >
+            Optional. Comma-separated list of statistics to include in the response.
+      required: [mac]
+
+- type: function
+  function:
+    name: get_link_planner_prediction
+    description: >
+      Retrieve predicted link performance from Cambium's Link Planner service using network and link name.
+      Returns predicted receive level, MCS, and fade margin for both directions.
+    parameters:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: ID of the cnWave network.
+        link_name:
+          type: string
+          description: The name of the wireless link to evaluate, e.g. "link-CN1-POP-DN1".
+      required:
+        - network_id
+        - link_name
+- type: function
+  function:
+    name: get_mac_for_node
+    description: |
+      Resolve a device name to its node MAC.
+      Use whenever you need the MAC for follow-up stats calls.
+    parameters:
+      type: object
+      properties:
+        network_id: {type: string, description: Network ID}
+        node_name:   {type: string, description: Friendly device name}
+      required: [network_id, node_name]
+
+- type: function
+  function:
+    name: get_macs_for_link
+    description: |
+      Return both node MACs *and names* for a link (a-side and z-side).
+      Use this to feed MACs into other link-stats APIs.
+    parameters:
+      type: object
+      properties:
+        network_id: {type: string, description: Network ID}
+        link_name:  {type: string, description: Exact link name}
+      required: [network_id, link_name]
